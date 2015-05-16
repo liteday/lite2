@@ -1,0 +1,18 @@
+<testsystems>
+    <system name="ts1">
+        <server addr="localhost:2001" name="ts1:michael" />
+        <server addr="localhost:2002" name="ts1:clark" />
+        <server addr="localhost:2003" name="ts1:richard" />
+    </system>
+    <system name="ts2">
+        <server addr="localhost:2010" name="ts2:brandon" />
+        <server addr="localhost:2011" name="ts2:lawrence" />
+    </system>
+    <system name="ts3">
+        <server addr="localhost:2020" name="ts2:andrea" />
+        <server addr="localhost:2021" name="ts2:stephanie" />
+        <server addr="localhost:2022" name="ts2:lotney" />
+    </system>
+</testsystems>
+
+<!-- vim: set ts=4 sw=4 et si: -->
