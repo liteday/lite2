@@ -21,6 +21,7 @@ class SystemIterator(object):
         self.idx = 0
 
     def next(self):
+        """Return next system."""
         if self.idx >= len(self.system):
             raise StopIteration
         sys = self.system.servers[self.idx]
@@ -83,21 +84,25 @@ class Database(object):
         cur.execute("DROP TABLE IF EXISTS system")
         cur.execute("CREATE TABLE system (id integer primary key, name varchar(32))")
         cur.execute("DROP TABLE IF EXISTS server")
-        cur.execute("CREATE TABLE server (id integer primary key, system_id integer, addr varchar(32), name varchar(32))")
+        cur.execute("CREATE TABLE server"+
+            "(id integer primary key, system_id integer, addr varchar(32), name varchar(32))")
         self.dbc.commit()
 
     def write_system(self, name):
-        """Add a new test-system entry. Returns the id value so it may be used as a foreign key.
+        """Add a new test-system entry. Returns the id value so it may be
+        used as a foreign key.
         NB: You must exlicitly call db.commit() to save changes."""
         cur = self.dbc.cursor()
         cur.execute("INSERT INTO system (name) VALUES (?)", (name,))
         return cur.lastrowid
 
     def write_server(self, system_id, addr, name):
-        """Add a new server entry. Requires the foreign key (id) of the associated test-system.
+        """Add a new server entry. Requires the foreign key (id) of the
+        associated test-system.
         NB: You must exlicitly call db.commit() to save changes."""
         cur = self.dbc.cursor()
-        cur.execute("INSERT INTO server (system_id, addr, name) VALUES (?, ?, ?)", (system_id, addr, name))
+        cur.execute("INSERT INTO server (system_id, addr, name) VALUES (?, ?, ?)",
+            (system_id, addr, name))
 
     def read_system(self, system_id):
         """Returns the test-system name corresponding to system_id."""

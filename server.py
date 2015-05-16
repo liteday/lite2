@@ -10,7 +10,6 @@ implements a very simple half-duplex protocol::
 A new socket connection must be opened for each request-response.
 """
 
-import time
 import socket
 
 
@@ -25,16 +24,18 @@ class Server(object):
         self.name = name
         self.host = host
         self.port = port
+        self.conn = None
+        self.addr = None
 
     def run(self):
         """Main server process. Listen for socket connections,
         process one incoming command, respond and drop connection."""
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind((self.host, int(self.port)))
-        s.listen(1)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((self.host, int(self.port)))
+        sock.listen(1)
         while 1:
-            self.conn, self.addr = s.accept()
+            self.conn, self.addr = sock.accept()
             data = self.conn.recv(1024)
             data = data.replace('\n', '')
             if data == "HELO":
@@ -47,8 +48,8 @@ class Server(object):
         self.conn.close()
 
 
-# Test suite
 def main():
+    """Test suite."""
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('host')

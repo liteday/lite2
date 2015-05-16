@@ -4,6 +4,7 @@ into a database. Can be invoked as a CLI, or imported and used as a module.
 
 from lxml import etree
 import database
+import os
 
 
 __author__ = "Rory MacHale"
@@ -22,18 +23,20 @@ class Reader(object):
     def save(self):
         """Save the XML specification to the datbase."""
         lastts = None
-        for ts in self.tree.getroot():
-            if ts != lastts:
-                ts_id = self.tsdb.write_system(ts.get('name'))
-                lastts = ts
-            for sys in ts:
+        for tss in self.tree.getroot():
+            if tss != lastts:
+                ts_id = self.tsdb.write_system(tss.get('name'))
+                lastts = tss
+            for sys in tss:
                 self.tsdb.write_server(ts_id, sys.get('addr'), sys.get('name'))
         self.tsdb.commit()
 
 
 def import_xml(xmlname, dbname, create=False):
     """API function which can be called to read an XML file into a database.
-    Add to the database by default, or if create is True, clear database first."""
+    Add to the database by default, or if create is True,
+    clear database first."""
+    create = create or (not os.path.exists(dbname))
     tsdb = database.Database(dbname)
     if create:
         tsdb.create()
@@ -46,11 +49,13 @@ def do_list(args):
     tsdb = database.Database(args.db)
     for sys in tsdb.read_all():
         for srv in sys:
-            print '#{0:3d} ts={1} addr={2} name={3}'.format(sys.tsid, sys.name, srv.addr, srv.name)
+            print '#{0:3d} ts={1} addr={2} name={3}'.format(
+                sys.tsid, sys.name, srv.addr, srv.name)
 
 
 def do_add(args):
-    """CLI add command. Read XML file and store in database, optionally clearing database first."""
+    """CLI add command. Read XML file and store in database,
+    optionally clearing database first."""
     import_xml(args.xml, args.db, args.create)
 
 

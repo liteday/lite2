@@ -5,10 +5,9 @@ Processes requests to deploy, check and stop test-systems.
 """
 
 from flask import Flask
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 import database
 import coord
-import sqlite3
 import os
 
 
@@ -32,7 +31,6 @@ def setup():
 def talk(func, tsdb, env, ts_id):
     """Communicate with the coordinator and display web-page with
     results for a single specified test-system ts_id."""
-    ts = tsdb.read_system(ts_id)
     servers = tsdb.read_servers(ts_id)
     status = [func(ts_id, server[2]) for server in servers]
     tmpl = env.get_template('go.html')
@@ -44,13 +42,14 @@ def index():
     """Display the main status page, with clickable links, for LITE."""
     tsdb, env, coo = setup()
     tsdb = database.Database(dbname)
-    all = list(tsdb.read_all())
+    allsys = list(tsdb.read_all())
     status = {}
-    for tsi in xrange(len(all)):
-        ts = all[tsi]
-        status.update({server.name: coo.bool_check(ts.tsid, server.addr) for server in ts})
+    for tsi in xrange(len(allsys)):
+        tss = allsys[tsi]
+        status.update({server.name: coo.bool_check(server.addr)
+            for server in tss})
     tmpl = env.get_template('index.html')
-    return tmpl.render(systems=all, status=status)
+    return tmpl.render(systems=allsys, status=status)
 
 
 @app.route('/go/<int:ts_id>')
@@ -58,9 +57,9 @@ def go(ts_id):
     """Web-page invoked when test-system ts_id is to be deployed.
     Display status of outcome."""
     tsdb, env, coo = setup()
-    ts = tsdb.read_system(ts_id)
+    tss = tsdb.read_system(ts_id)
     servers = tsdb.read_servers(ts_id)
-    status = [coo.deploy(ts, server[3], server[2]) for server in servers]
+    status = [coo.deploy(tss, server[3], server[2]) for server in servers]
     tmpl = env.get_template('go.html')
     return tmpl.render(status=status)
 
@@ -86,7 +85,7 @@ def initialise(dbname, port):
     print
     if not os.path.exists(dbname):
         import reader
-        path, ext = os.path.splitext(dbname)
+        path, _ = os.path.splitext(dbname)
         xmlname = path+'.xml'
         reader.import_xml(xmlname, dbname, create=True)
         print "** Created {0}".format(dbname)
