@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        span.red {
+            color: red;
+            font-weight: bold;
+        }
+        span.green {
+            color: #0B0;
+            font-weight: bold;
+        }
+    </style>
+    <body>
+        <ul>
+            {% for sys in systems %}
+            <li>TS: #{{ sys.tsid }}: {{ sys.name }} <a href="go/{{ sys.tsid }}">Deploy</a> <a href="check/{{ sys.tsid }}">Check</a> <a href="stop/{{ sys.tsid }}">Stop</a>
+            <ul>
+                {% for server in sys %}
+                <li>
+                    name({{ server.name }}) addr={{ server.addr }} status={{ server.name }}
+                    {% if status[server.name] %}
+                        <span class='green'>online</span>
+                    {% else %}
+                        <span class='red'>offline</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+        </ul>
+        <pre>
+        </pre>
+    </body>
+</html>
