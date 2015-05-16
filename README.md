@@ -27,4 +27,10 @@ file to an existing database:
 
     python reader.py
 
+Dependencies:
+
+    - Flask
+    - Jinja2
+    - lxml
+    - argparse (python < 2.7)
 
