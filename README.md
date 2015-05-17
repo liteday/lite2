@@ -34,3 +34,21 @@ Dependencies:
     - lxml
     - argparse (python < 2.7)
 
+Run test suites:
+
+    python testsuite.py
+
+You can optionally add a test suite name (by default, all suites run):
+
+    - ReaderTests
+    - WebTests
+    - CoordTests
+    - ServerTests
+
+Run coverage checking using Ned Batchelders' coverage.py:
+
+    coverage [--branch] testsuite.py [test-suite]
+    coverage html
+
+Browse the generated coverage report at `./htmlcov/index.html`.
+
