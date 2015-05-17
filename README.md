@@ -47,7 +47,7 @@ You can optionally add a test suite name (by default, all suites run):
 
 Run coverage checking using Ned Batchelders' coverage.py:
 
-    coverage [--branch] testsuite.py [test-suite]
+    coverage run [--branch] testsuite.py [test-suite]
     coverage html
 
 Browse the generated coverage report at `./htmlcov/index.html`.
