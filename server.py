@@ -20,12 +20,29 @@ __date__ = "2015-05-15"
 
 class Server(object):
     """Simple TCP server."""
-    def __init__(self, name, host, port):
+    def __init__(self, name, host, port, debug=False):
         self.name = name
         self.host = host
         self.port = port
         self.conn = None
         self.addr = None
+        self.debug = debug
+
+    def recv(self, sock):
+        """Receive a command from the socket."""
+        self.conn, self.addr = sock.accept()
+        data = self.conn.recv(1024)
+        data = data.replace('\n', '')
+        data = data.replace('\r', '') # Telnet will send \r as well
+        if self.debug: # pragma: no cover
+            print "server {0}: received {1}".format(self.name, data)
+        return data
+
+    def send(self, msg):
+        """Send a response to the socket."""
+        if self.debug: # pragma: no cover
+            print "server {0}: sending {1}".format(self.name, msg)
+        self.conn.send("{0}\n".format(msg))
 
     def run(self):
         """Main server process. Listen for socket connections,
@@ -35,14 +52,14 @@ class Server(object):
         sock.bind((self.host, int(self.port)))
         sock.listen(1)
         while 1:
-            self.conn, self.addr = sock.accept()
-            data = self.conn.recv(1024)
-            data = data.replace('\n', '')
+            data = self.recv(sock)
             if data == "HELO":
-                self.conn.send("OLEH\n")
+                self.send("OLEH")
             elif data == "ID":
-                self.conn.send("ID {0}\n".format(self.name))
+                self.send("ID {0}".format(self.name))
             elif data == "QUIT":
+                if self.debug: # pragma: no cover
+                    print "server {0}: quitting".format(self.name)
                 break
             self.conn.close()
         self.conn.close()

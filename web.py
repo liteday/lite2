@@ -78,7 +78,7 @@ def stop(ts_id):
     return talk(coo.stop, tsdb, env, ts_id)
 
 
-def initialise(dbname, port):
+def initialise(dbname, port): # pragma: no cover
     """Check database. If not found, look for <name>.xml corresponding
     to <name>.db database, and try to import the XML into the database
     automatically."""
